@@ -78,14 +78,13 @@ public class ScheduledTask {
         String[] prefix = {"zwyw", "csbb", "bmts", "xxkd"};
         //图说模块前缀
         String[] prefixToTs = {"cs", "jj", "fg"};
-        logger.info("定时器执行0...");
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(5));
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     for (String prefixType : prefix) {
-                        logger.info("定时器执行1...");
+                        
                         //爬取新闻详情
                         getNewsInfo("http://www.hefei.gov.cn/ssxw/" + prefixType + "/index.html", "listnews");
                         Thread.sleep(timeInterval);
@@ -112,14 +111,14 @@ public class ScheduledTask {
      * @date 2020-01-16
      */
     private void getNewsInfo(String url, String className) {
-        logger.info("定时器执行2...");
+       
         try {
             HttpClient client = HttpClients.createDefault();
             HttpGet get = new HttpGet(url);
-            logger.info("定时器执行3...");
+          
             get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             HttpResponse response = client.execute(get);
-            logger.info("定时器执行4..." + response);
+         
             String __jsluid = getJsluid(response);
             String body = getResponseBodyAsString(response);
             logger.info("body:" + body);
@@ -199,7 +198,7 @@ public class ScheduledTask {
         } catch (IOException e) {
             logger.error("爬虫出现异常{}" + e.getMessage());
             e.printStackTrace();
-            //cron();
+           
         }
     }
 
