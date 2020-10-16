@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ustcinfo.hftnews.mapper.SaveNewsInfoMapper">
+    <resultMap id="BaseResultMap" type="com.ustcinfo.hftnews.model.News">
+        <result column="newsTitle" property="newsTitle" jdbcType="VARCHAR"/>
+        <result column="newsSource" property="newsSource" jdbcType="VARCHAR"/>
+        <result column="newsContent" property="newsContent" jdbcType="VARCHAR"/>
+        <result column="imageUrl" property="imageUrl" jdbcType="VARCHAR"/>
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+    </resultMap>
+    <update id="updataNewsInfo" parameterType="com.ustcinfo.hftnews.model.News">
+        INSERT INTO 
+    </update>
+</mapper>
