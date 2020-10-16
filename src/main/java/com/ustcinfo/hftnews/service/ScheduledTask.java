@@ -10,7 +10,6 @@ import com.ustcinfo.hftnews.mapper.SaveNewsInfoMapper;
 import com.ustcinfo.hftnews.model.News;
 import com.ustcinfo.hftnews.utils.DeleteFileUtil;
 import com.ustcinfo.hftnews.utils.IOUtils;
-import com.ustcinfo.hftnews.utils.Key64;
 import com.ustcinfo.hftnews.utils.UUIDUtil;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -212,11 +211,8 @@ public class ScheduledTask {
      * @date 2020/10/12
      */
     public String updateImg(File imgFile) {
-        HttpResult httpResult = OkHttps.sync("http://www.ustcinfo.com:10082/SaveFileProject/saveFile/newSave")
+        HttpResult httpResult = OkHttps.sync("url")
                 .nothrow()
-                .addBodyPara("source", "web")
-                .addBodyPara("type", "1010")
-                .addBodyPara("fileSavePath", "/hft-biz/news/images")
                 .addFilePara("file", imgFile)
                 .post();
         // 判断执行状态
@@ -240,8 +236,8 @@ public class ScheduledTask {
         String code = mapper.getString("code");
         if ("0".equals(code)) {
             String imgUrl = mapper.getString("data");
-            //key64解密
-            return Key64.decipher(imgUrl);
+            
+            return imgUrl;
         } else {
             String message = mapper.getString("message");
             logger.error(message);
