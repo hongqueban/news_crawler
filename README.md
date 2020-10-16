@@ -17,10 +17,8 @@
   
     HttpClient client = HttpClients.createDefault();
             HttpGet get = new HttpGet(url);
-            logger.info("定时器执行3...");
             get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             HttpResponse response = client.execute(get);
-            logger.info("定时器执行4..." + response);
             String __jsluid = getJsluid(response);
             String body = getResponseBodyAsString(response);
             logger.info("body:" + body);
