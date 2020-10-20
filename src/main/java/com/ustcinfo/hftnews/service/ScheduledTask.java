@@ -69,8 +69,7 @@ public class ScheduledTask {
      * @return void
      * @date 2019/10/9
      */
-//    @Scheduled(cron = "0 50 09 * * ?")
-    @Scheduled(fixedRate=50000)
+    @Scheduled(cron = "0 50 09 * * ?")
     @Async
     public void cron() {
         logger.info("定时器执行...");
