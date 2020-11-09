@@ -1,0 +1,13 @@
+server:
+  port: 8097
+
+
+mybatis:
+  type-aliases-package: com.ustcinfo.hftnews.model
+  mapper-locations: classpath:mapper/*.xml
+
+
+logging:
+  level:
+    com.ustcinfo.wa.dao: debug
+  config: classpath:log4j2.xml
