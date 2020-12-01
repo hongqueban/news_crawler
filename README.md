@@ -36,10 +36,10 @@
             String __jsl_clearance1 = getJslSecondClearance(body1);
   
 
-## Release History 版本历史
+## History 版本历史
 
 * 1.4
-    * 增加无需反爬虫场景 代码更加健壮 
+    * 增加无需反爬虫场景 适应更多需求 代码更加健壮 
 * 1.3
     * 修改配置文件为yml格式，结构更清晰 
 * 1.2
