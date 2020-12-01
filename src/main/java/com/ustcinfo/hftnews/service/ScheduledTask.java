@@ -14,6 +14,7 @@ import com.ustcinfo.hftnews.utils.UUIDUtil;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
@@ -31,6 +32,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class ScheduledTask {
      * @return void
      * @date 2019/10/9
      */
-    @Scheduled(cron = "0 50 09 * * ?")
+    @Scheduled(cron = "0 00 09 * * ?")
     @Async
     public void cron() {
         logger.info("定时器执行...");
@@ -83,7 +85,6 @@ public class ScheduledTask {
             public void run() {
                 try {
                     for (String prefixType : prefix) {
-                        
                         //爬取新闻详情
                         getNewsInfo("http://www.hefei.gov.cn/ssxw/" + prefixType + "/index.html", "listnews");
                         Thread.sleep(timeInterval);
@@ -110,40 +111,43 @@ public class ScheduledTask {
      * @date 2020-01-16
      */
     private void getNewsInfo(String url, String className) {
-       
         try {
             HttpClient client = HttpClients.createDefault();
             HttpGet get = new HttpGet(url);
-          
             get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             HttpResponse response = client.execute(get);
-         
-            String __jsluid = getJsluid(response);
-            String body = getResponseBodyAsString(response);
-            logger.info("body:" + body);
-            String __jsl_clearance = getJslClearance(body);
-            logger.info(__jsluid + "; " + __jsl_clearance);
-
-            HttpGet get1 = new HttpGet(url);
-            get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
-            get1.setHeader("Cookie", __jsluid + "; " + __jsl_clearance);
-            HttpResponse response1 = client.execute(get1);
-
-            String body1 = getResponseBodyAsString(response1);
-
-            String __jsl_clearance1 = getJslSecondClearance(body1);
-
+            String __jsluid = "", __jsl_clearance1 = "";
+            int statusCode = response.getStatusLine().getStatusCode();
             Connection connect = Jsoup.connect(url);
-            connect.header("Cookie", __jsluid + "; " + __jsl_clearance1);
-            connect.header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+            if (statusCode != HttpStatus.SC_OK) {
+                __jsluid = getJsluid(response);
+                String body = getResponseBodyAsString(response);
+                logger.info("body:" + body);
+                String __jsl_clearance = getJslClearance(body);
+                logger.info(__jsluid + "; " + __jsl_clearance);
+
+                HttpGet get1 = new HttpGet(url);
+                get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+                get1.setHeader("Cookie", __jsluid + "; " + __jsl_clearance);
+                HttpResponse response1 = client.execute(get1);
+
+                String body1 = getResponseBodyAsString(response1);
+
+                __jsl_clearance1 = getJslSecondClearance(body1);
+                System.out.println(__jsluid + "; " + __jsl_clearance1);
+                connect.header("Cookie", __jsluid + "; " + __jsl_clearance1);
+                connect.header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+            }
             Document doc = connect.get();
             Elements element = doc.getElementsByClass(className);
             Elements eleHref = element.select("a[href][title]");
             for (Element ele : eleHref) {
                 String href = ele.attr("href");
                 Connection connection = Jsoup.connect(href);
-                connection.header("Cookie", __jsluid + "; " + __jsl_clearance1);
-                connection.header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+                if (statusCode != HttpStatus.SC_OK) {
+                    connection.header("Cookie", __jsluid + "; " + __jsl_clearance1);
+                    connection.header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+                }
                 Document docc = connection.get();
                 //新闻标题
                 String newsTitle = docc.select("h1.newstitle").text();
@@ -177,7 +181,7 @@ public class ScheduledTask {
                             //调用上传文件接口将图片上传到服务器
                             String imgUrlTrue = updateImg(imgFile);
                             //上传完成后删除本地文件
-                            if(imgFile.exists()){
+                            if (imgFile.exists()) {
                                 imgFile.delete();
                             }
                             news.setImageUrl(imgUrlTrue);
@@ -197,7 +201,7 @@ public class ScheduledTask {
         } catch (IOException e) {
             logger.error("爬虫出现异常{}" + e.getMessage());
             e.printStackTrace();
-           
+            //cron();
         }
     }
 
@@ -209,7 +213,7 @@ public class ScheduledTask {
      * @date 2020/10/12
      */
     public String updateImg(File imgFile) {
-        HttpResult httpResult = OkHttps.sync("url")
+        HttpResult httpResult = OkHttps.sync("")
                 .nothrow()
                 .addFilePara("file", imgFile)
                 .post();
@@ -233,9 +237,7 @@ public class ScheduledTask {
         Mapper mapper = httpResult.getBody().toMapper();
         String code = mapper.getString("code");
         if ("0".equals(code)) {
-            String imgUrl = mapper.getString("data");
-            
-            return imgUrl;
+            return mapper.getString("data");
         } else {
             String message = mapper.getString("message");
             logger.error(message);
@@ -258,25 +260,24 @@ public class ScheduledTask {
 
             get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             HttpResponse response = client.execute(get);
-
-            String __jsluid = getJsluid(response);
-            String body = getResponseBodyAsString(response);
-
-            String __jsl_clearance = getJslClearance(body);
-
-            HttpGet get1 = new HttpGet(imgUrl);
-            get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
-            get1.setHeader("Cookie", __jsluid + "; " + __jsl_clearance);
-            HttpResponse response1 = client.execute(get1);
-
-            String body1 = getResponseBodyAsString(response1);
-
-            String __jsl_clearance1 = getJslSecondClearance(body1);
-
             HttpGet getImgFile = new HttpGet(imgUrl);
             getImgFile.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
-            getImgFile.setHeader("Cookie", __jsluid + "; " + __jsl_clearance1);
+            if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode()) {
+                String __jsluid = getJsluid(response);
+                String body = getResponseBodyAsString(response);
 
+                String __jsl_clearance = getJslClearance(body);
+
+                HttpGet get1 = new HttpGet(imgUrl);
+                get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+                get1.setHeader("Cookie", __jsluid + "; " + __jsl_clearance);
+                HttpResponse response1 = client.execute(get1);
+
+                String body1 = getResponseBodyAsString(response1);
+
+                String __jsl_clearance1 = getJslSecondClearance(body1);
+                getImgFile.setHeader("Cookie", __jsluid + "; " + __jsl_clearance1);
+            }
             response = client.execute(getImgFile);
             output(response, file);
         } catch (Exception e) {
@@ -375,9 +376,9 @@ public class ScheduledTask {
             int i = result.indexOf(";");
             logger.info(result.substring(0, i));
             return result.substring(0, i);
-        }catch (Exception exception){
-            logger.error("V8解析出现异常{}" + exception.getMessage());
-            exception.printStackTrace();
+        } catch (Exception exception) {
+            logger.error("V8解析出现异常{},body:{}", exception.getMessage(), body, exception);
+            //exception.printStackTrace();
             return null;
         }
     }
@@ -434,6 +435,19 @@ public class ScheduledTask {
             }
         }
         return "";
+    }
+
+    /**
+     * 程序启动时需要执行爬虫
+     *
+     * @param
+     * @return
+     * @date 2020/11/13
+     */
+    @PostConstruct
+    public void init() {
+        cron();
+        logger.info("初始化成功...{}");
     }
 }
 
