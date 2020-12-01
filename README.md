@@ -18,7 +18,8 @@
   
             HttpClient client = HttpClients.createDefault();
             HttpGet get = new HttpGet(url);
-            get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+            get.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) 
+            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             HttpResponse response = client.execute(get);
             String __jsluid = getJsluid(response);
             String body = getResponseBodyAsString(response);
@@ -27,7 +28,8 @@
             logger.info(__jsluid + "; " + __jsl_clearance);
 
             HttpGet get1 = new HttpGet(url);
-            get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+            get1.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) 
+            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
             get1.setHeader("Cookie", __jsluid + "; " + __jsl_clearance);
             HttpResponse response1 = client.execute(get1);
 
