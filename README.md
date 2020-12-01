@@ -38,12 +38,16 @@
 
 ## Release History 版本历史
 
-* 0.2.1
-    * CHANGE: Update docs
-* 0.2.0
-    * CHANGE: Remove `README.md`
-* 0.1.0
-    * Work in progress
+* 1.4
+    * 增加无需反爬虫场景 代码更加健壮 
+* 1.3
+    * 修改配置文件为yml格式，结构更清晰 
+* 1.2
+    * 修改日志模块
+* 1.1.0
+    * 定时任务修改
+* 1.0
+    * 代码首次提交
 
 ## Authors 关于作者
 
