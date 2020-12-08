@@ -11,3 +11,15 @@ logging:
   level:
     com.ustcinfo.wa.dao: debug
   config: classpath:log4j2.xml
+
+spring:
+  datasource:
+    hikari:
+      read-only: false
+      connection-timeout: 60000
+      idle-timeout: 60000
+      validation-timeout: 3000
+      max-lifetime: 60000
+      login-timeout: 5
+      maximum-pool-size: 60
+      minimum-idle: 10
