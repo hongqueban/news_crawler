@@ -8,7 +8,6 @@ import com.ejlchina.okhttps.Mapper;
 import com.ejlchina.okhttps.OkHttps;
 import com.ustcinfo.hftnews.mapper.SaveNewsInfoMapper;
 import com.ustcinfo.hftnews.model.News;
-import com.ustcinfo.hftnews.utils.DeleteFileUtil;
 import com.ustcinfo.hftnews.utils.IOUtils;
 import com.ustcinfo.hftnews.utils.UUIDUtil;
 import org.apache.http.Header;
@@ -436,7 +435,6 @@ public class ScheduledTask {
         }
         return "";
     }
-
     /**
      * 程序启动时需要执行爬虫
      *
